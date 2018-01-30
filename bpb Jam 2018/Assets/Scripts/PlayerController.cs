@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour
     public float jumpForce = .005f;
     public float ForwardJump = 1f;
 
+    private int DynamicJumpFrames = 0;
+    private int DynamicJumpFramesStart = 6;
 
     public Transform groundCheck;
 
@@ -34,18 +36,22 @@ public class PlayerController : MonoBehaviour
     {
         grounded = Math.Abs(rb2d.velocity.y) < 0.1; //;Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
 
-        if (Input.GetButtonDown("Jump") && grounded)
+        if (Input.GetButton("Jump") && grounded)
         {
             jump = true;
+            DynamicJumpFrames = DynamicJumpFramesStart;
+        } else if(!Input.GetButton("Jump"))
+        {
+            jump = false;
         }
     }
 
     void FixedUpdate()
     {
+        
         float h = Input.GetAxis("Horizontal");
         if (Math.Abs(h) < 0.04) h = 0;
         //anim.SetFloat("Speed", Mathf.Abs(h));
-
         float curMaxSpeed = (grounded ? maxSpeed : ForwardJump * maxSpeed);
 
         if (h * rb2d.velocity.x < curMaxSpeed)
@@ -59,11 +65,16 @@ public class PlayerController : MonoBehaviour
         else if (h < 0 && facingRight)
             Flip();
 
-        if (jump) {
+        if (jump && DynamicJumpFrames > 0) {
             //  anim.SetTrigger("Jump");
-            rb2d.AddForce((Vector2.up * jumpForce));
-            jump = false;
+            if(DynamicJumpFrames == DynamicJumpFramesStart) {
+                rb2d.AddForce((Vector2.up * jumpForce / 2));
+            } else {
+                rb2d.AddForce(Vector2.up * ((jumpForce - (jumpForce / 2)) / DynamicJumpFramesStart));
+            }
         }
+
+        DynamicJumpFrames = Math.Max(0, DynamicJumpFrames - 1);
     }
 
 
