@@ -33,11 +33,19 @@ public class shoot : MonoBehaviour {
             if (flip) playerPos.x -= 5;
             else playerPos.x += 5;
 
-            GameObject splashBall = Instantiate<GameObject>(splashPrefab, playerPos, splashPrefab.transform.rotation);
+            if (playerPos.x > crossHair.transform.position.x && !flip
+                || playerPos.x < crossHair.transform.position.x && flip)
+            {
+                pl.GetComponent<PlayerController>().Flip();
+            }
 
-            splashPos.Set(splashBall.transform.position.x, splashBall.transform.position.y);
+
+             GameObject splashBall = Instantiate<GameObject>(splashPrefab);
+
             target.Set(crossHair.transform.position.x, crossHair.transform.position.y);
             splashBall.GetComponent<splashBall>().setTarget(target);
+
+            splashPos.Set(splashBall.transform.position.x, splashBall.transform.position.y);
             target = target - splashPos;
             target.Normalize();
             target.x *= power;

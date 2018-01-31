@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class splashBall : MonoBehaviour {
-
-
-    int color = 0;
+    
     public GameObject splashPrefab;
     Vector2 target = new Vector2();
     Vector2 ownPos = new Vector2();
@@ -15,7 +13,6 @@ public class splashBall : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
-        color = Random.Range(0, 5);
     }
 	
 	// Update is called once per frame
@@ -25,14 +22,22 @@ public class splashBall : MonoBehaviour {
         if (distanceTarget < 1)
         {
             this.gameObject.SetActive(false);
-            
-            SpriteRenderer bla = splashPrefab.transform.Find("splash_img").GetComponent<SpriteRenderer>();
-            splashPos.Set(target.x - bla.bounds.size.x / 2, target.y - bla.bounds.size.y / 2, -1);
-            GameObject splash = Instantiate<GameObject>(splashPrefab, splashPos, transform.rotation);
-            SpriteRenderer jens = splash.transform.Find("splash_img").GetComponent<SpriteRenderer>();
-            SpriteRenderer jens2 = splash.transform.Find("splash_img").GetComponent<SpriteRenderer>();
 
-            setColor(jens);
+            GameObject splash = Instantiate<GameObject>(splashPrefab);
+
+            SpriteRenderer img = splash.transform.Find("splash_img").GetComponent<SpriteRenderer>();
+            // rotate splash
+            img.transform.Rotate(0, 0, Random.Range(0, 360));
+
+            // scale splash
+            Vector3 scale = img.transform.localScale;
+            scale.x *= Random.Range(.5f, 2f);
+            scale.y *= Random.Range(.5f, 2f);
+            img.transform.localScale = scale;
+            setColor(img);
+
+            // translate splash to target pos
+            splash.transform.Translate(target.x, target.y, -1);
 
             Destroy(this.gameObject);
         }
@@ -44,19 +49,19 @@ public class splashBall : MonoBehaviour {
         {
             case 0:
                 
-                img.color = new Color(21 / 255f, 88 / 255f, 110 / 255f, 1f);
+                img.color = new Color(21 / 255f, 88 / 255f, 110 / 255f, .5f);
                 break;
             case 1:
-                img.color = new Color(251 / 255f, 210 / 255f, 91 / 255f, 1f);
+                img.color = new Color(251 / 255f, 210 / 255f, 91 / 255f, .5f);
                 break;
             case 2:
-                img.color = new Color(11 / 255f, 33 / 255f, 69 / 255f, 1f);
+                img.color = new Color(11 / 255f, 33 / 255f, 69 / 255f, .5f);
                 break;
             case 3:
-                img.color = new Color(234 / 255f, 75 / 255f, 49 / 255f, 1);
+                img.color = new Color(234 / 255f, 75 / 255f, 49 / 255f, .5f);
                 break;
             case 4:
-                img.color = new Color(184 / 255f, 19 / 255f, 19 / 255f, 1);
+                img.color = new Color(184 / 255f, 19 / 255f, 19 / 255f, .5f);
                 break;
         }
     }
