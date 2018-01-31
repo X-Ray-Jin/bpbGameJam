@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class crosshair : MonoBehaviour {
 
-    public float range = 2;
-    Vector3 tmp = new Vector3();
-    Vector3 tmp2 = new Vector3();
+    public float range = 25;
+    Vector2 mouse = new Vector2();
+    Vector2 playerPos = new Vector2();
+    Vector2 crossPos = new Vector2();
 
     // Use this for initialization
     void Start () {
@@ -15,33 +16,29 @@ public class crosshair : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        tmp.Set(Input.mousePosition.x, Input.mousePosition.y, 0);
-        tmp = Camera.main.ScreenToWorldPoint(tmp);
-        Debug.Log("mouse " + tmp);
-        // tmp.x = tmp.x;
-        // tmp.y = tmp.y;
+        mouse.Set(Input.mousePosition.x, Input.mousePosition.y);
+        mouse = Camera.main.ScreenToWorldPoint(mouse);
 
         GameObject pl = GameObject.FindGameObjectWithTag("Player");
-        tmp2.Set(pl.transform.position.x, pl.transform.position.y, 0);
-        Debug.Log("player " + tmp2);
+        playerPos.Set(pl.transform.position.x, pl.transform.position.y);
 
-        tmp = tmp - tmp2;
-        Debug.Log("off " + tmp);
-        if (Mathf.Abs(tmp.x) <= range)
+        Vector2 tmp = mouse - playerPos;
+        if (tmp.magnitude <= range)
         {
-            tmp2.x += tmp.x;
-        } else tmp2.x += Mathf.Sign(tmp.x) * range;
-
-        if (Mathf.Abs(tmp.y) <= range)
+            crossPos = playerPos + tmp;
+            transform.SetPositionAndRotation(tmp, transform.rotation);
+        } else
         {
-            tmp2.y += tmp.y;
-        } else tmp2.y += Mathf.Sign(tmp.y) * range;
+            tmp.Normalize();
+            crossPos.x = tmp.x * range;
+            crossPos.y = tmp.y * range;
+            crossPos = playerPos + crossPos;
+        }
+        transform.SetPositionAndRotation(crossPos, transform.rotation);
+    }
 
-    Debug.Log("cross " + tmp2);
-
-        //tmp2.z = 0;
-
-        transform.SetPositionAndRotation(tmp2, transform.rotation);
-
+    public Vector2 getPos()
+    {
+        return crossPos;
     }
 }
